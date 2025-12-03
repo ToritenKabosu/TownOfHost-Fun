@@ -12,9 +12,11 @@ TOHFは、[TownOfHost-K](https://github.com/KYMario/TownOfHost-K/)に、役職/�
 このModを使用して発生したバグは、Innersloth様(Among Us公式)や他Mod様に報告せず、[TOHFの開発者](https://github.com/ToritenKabosu/TownOfHost-Fun/wiki/開発者)に報告してください。<br>
 TOH-Fの詳細については、[Wiki](https://github.com/ToritenKabosu/TownOfHost-Fun/wiki/)をご確認ください。<br>
 
+このModのリリース日は未定です。
+<!--
 **最新版: https://github.com/ToritenKabosu/TownOfHost-Fun/releases/latest/**<br>
 旧版: https://github.com/ToritenKabosu/TownOfHost-Fun/releases/
-
+-->
 ## 禁止/注意事項
 <details open>
 <summary><b>禁止事項</b></summary>
