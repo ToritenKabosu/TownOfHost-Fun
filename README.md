@@ -1,5 +1,5 @@
 # TownOfHost-Fun
-![TownOfHost_Fun_Icon](https://github.com/user-attachments/assets/14b74301-3116-4886-8b4a-838920e9e49a/)
+[![TownOfHost_Fun_Icon](https://github.com/user-attachments/assets/14b74301-3116-4886-8b4a-838920e9e49a/)](https://github.com/ToritenKabosu/TownOfHost-Fun)
 <br>
 <div align="center">
 <i>This mod is not affiliated with Among Us or Innersloth LLC,<br> and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC.<br>
