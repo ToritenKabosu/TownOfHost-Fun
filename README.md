@@ -7,9 +7,9 @@ Portions of the materials contained herein are property of Innersloth LLC.<br>
 © Innersloth LLC.</i><br>
 </div>
 
-## TOHFについて
-TOHFは、[TownOfHost-K](https://github.com/KYMario/TownOfHost-K/)に、役職/機能などを追加したModです。<br>
-このModを使用して発生したバグは、Innersloth様(Among Us公式)や他Mod様に報告せず、[TOHFの開発者](https://github.com/ToritenKabosu/TownOfHost-Fun/wiki/開発者)に報告してください。<br>
+## TOH-Fについて
+TOH-Fは、[TownOfHost-K](https://github.com/KYMario/TownOfHost-K/)に、役職/機能などを追加したModです。<br>
+このModを使用して発生したバグは、Innersloth様(Among Us公式)や他Mod様に報告せず、[TOH-Fの開発者](https://github.com/ToritenKabosu/TownOfHost-Fun/wiki/開発者)に報告してください。<br>
 TOH-Fの詳細については、[Wiki](https://github.com/ToritenKabosu/TownOfHost-Fun/wiki/)をご確認ください。<br>
 
 このModのリリース日は未定です。
