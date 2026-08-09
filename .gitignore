@@ -2,4 +2,11 @@ bin/
 obj/
 bin/
 FodyWeavers.xsd
-memo.md
+.vs/
+TownOfHost.csproj.user
+TownOfHost-Fun.v.1.0.0.0.sln
+TownOfHost-Fun-Testing/
+TOHF-Roles/Neutral/VentFan.cs
+.vscode/
+Memo/Role.txt
+repomix-output.xml
