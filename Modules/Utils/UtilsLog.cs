@@ -38,7 +38,7 @@ namespace TownOfHost
             {
                 var logger = Logger.Handler("DumpLog");
                 logger.Info("------------基本設定------------");
-                var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(10);
+                var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(12);
                 foreach (var t in tmp) logger.Info(t);
                 logger.Info("------------詳細設定------------");
                 foreach (var o in OptionItem.AllOptions.Where(o => o is not ObjectOptionitem))
@@ -311,7 +311,7 @@ namespace TownOfHost
             winnerList ??= Main.winnerList;
 
             if (!(CustomWinnerHolder.WinnerTeam is CustomWinner.None or CustomWinner.Draw))
-                sb.Append($"{GetString("TaskPlayerB")}:\n　{Main.AllPlayerNames[winnerList[0]] ?? "?"}");
+                sb.Append($"{GetString("TaskPlayerB")}:\n　{Main.AllPlayerNames.GetValueOrDefault(TaskBattle.RTAPlayerId, "?")}");
 
             sb.Append($"\n{GetString("TaskCount")}:")
             .Append($"\n　{GetString(StringNames.GameCommonTasks)}: {Main.NormalOptions.NumCommonTasks}{$"{(AddCommon > 0 ? $"+ {AddCommon} * {TaskBattle.MaxAddCount.GetInt()}" : "")}"}")

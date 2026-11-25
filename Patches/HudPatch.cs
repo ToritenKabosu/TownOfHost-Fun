@@ -115,6 +115,11 @@ namespace TownOfHost
 
             if (SetHudActivePatch.IsActive)
             {
+                //一回けす。
+                if (__instance.MatchInfoButton?.gameObject?.active is true)
+                {
+                    __instance.MatchInfoButton.gameObject.SetActive(false);
+                }
                 if (player.IsAlive())
                 {
                     __instance.AdminButton.Hide();
@@ -338,7 +343,7 @@ namespace TownOfHost
                             player.Data.Role.Ability.Image = image;
                             player.Data.Role.InitializeAbilityButton();
                         }
-                        else if (player.Data.Role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
+                        else if (player.Data.Role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel or RoleTypes.SpiritGuide)
                         {
                             player.Data.Role.Ability.Image = image;
                             player.Data.Role.InitializeAbilityButton();
@@ -474,11 +479,6 @@ namespace TownOfHost
             Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
             if (Amnesia.CheckAbility(seer))
             {
-                //プログレスキラー
-                if (seer.Is(CustomRoles.ProgressKiller) && target.Is(CustomRoles.Workhorse) && ProgressKiller.ProgressWorkhorseseen)
-                {
-                    Mark.Append($"<#0000ff>♦</color>");
-                }
                 //エーリアン
                 if ((seerRole as Alien)?.mode == Alien.AlienMode.ProgressKiller && Alien.ProgressWorkhorseseen)
                     if (target.Is(CustomRoles.Workhorse))
@@ -629,7 +629,7 @@ namespace TownOfHost
                     desc += $"<size=70%>{inforoleinfo?.Desc()}";
                 }
                 else
-                    if (inforole.IsVanilla() && inforole is not CustomRoles.GuardianAngel)
+                    if (inforole.IsVanilla() && inforole is not CustomRoles.GuardianAngel and not CustomRoles.SpiritGuide)
                     {
                         text += $"<size=100%>{inforoleinfo.Description.Blurb}" + "\n\n</size>";
                         desc += $"<size=70%>{inforoleinfo.Description.Description}";

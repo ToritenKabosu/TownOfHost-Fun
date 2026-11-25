@@ -116,7 +116,7 @@ namespace TownOfHost
             if (GameStates.IsMeeting || GameStates.IsLobby || Wait) return;
 
             var State = PlayerState.GetByPlayerId(reporter.PlayerId);
-            if (State.NumberOfRemainingButtons <= 0 && target is null && Cancelcheck is not false) return;
+            if (State.NumberOfRemainingButtons <= 0 && target is null && Cancelcheck is true) return;
 
             if (Cancelcheck is null or true)
                 if (!CheckMeeting(reporter, target, checkdie: Cancelcheck is true)) return;
@@ -319,6 +319,7 @@ namespace TownOfHost
                 kvp.Value.LastRoom = pc?.GetPlainShipRoom();
                 if (IsMeetingBlackout) kvp.Value.IsBlackOut = true;
             }
+            AntiTeleporter.OnMeetingCalled();
 
             AdminProvider.CalculateAdmin(true);
 
@@ -360,6 +361,7 @@ namespace TownOfHost
             DisableDevice.SendMessage();
 
             var meetingInfo = UtilsNotifyRoles.ExtendedMeetingText;
+            Notice.OnReportDeadBody(reporter, target);
             foreach (var pc in PlayerCatch.AllPlayerControls)
             {
                 var roleClass = pc.GetRoleClass();

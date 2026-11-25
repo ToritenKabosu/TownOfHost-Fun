@@ -26,6 +26,7 @@ class AddondataInfo
                 CustomRoles.Guarding => "ζ",
                 CustomRoles.Management => "θ",
                 CustomRoles.Opener => "п",
+                CustomRoles.AntiTeleporter => "＠",
                 CustomRoles.Seeing => "☯",
                 CustomRoles.Lighting => "＊",
                 CustomRoles.Moon => "э",
@@ -41,6 +42,7 @@ class AddondataInfo
                 CustomRoles.Clumsy => "Ｃ",
                 CustomRoles.Slacker => "ＳＬ",
                 CustomRoles.News => "Ｎ",
+                CustomRoles.Notice => "Ｎо",
                 CustomRoles.Sunglasses => "Ｓ",
                 _ => ""
             };
@@ -91,7 +93,7 @@ class AddondataInfo
                     {CustomRoles.Powerful , "#f08e39"},
                     {CustomRoles.Stack , "#b55f47"},
                     {CustomRoles.Absorb,"#434981"},
-                    //{CustomRoles.AntiTeleporter,"#dea785"},
+                    {CustomRoles.AntiTeleporter,"#793838"},
                     //デバフ
                     { CustomRoles.NonReport,"#006666"},
                     {CustomRoles.Notvoter,"#6c848d"},
@@ -104,6 +106,7 @@ class AddondataInfo
                     {CustomRoles.SlowStarter,"#ff00ff"},
                     {CustomRoles.InfoPoor ,"#555647"},
                     {CustomRoles.News, "#828282"},
+                    {CustomRoles.Notice, "#33455e"},
                     {CustomRoles.Sunglasses , "#2e103d"},
 
                     //第三属性
@@ -125,10 +128,11 @@ class AddondataInfo
                     {CustomRoles.GhostReseter , "#a87a71"},
                     {CustomRoles.GhostRumour , "#707cab"},
                     {CustomRoles.GuardianAngel,"#7cc0fc"},
+                    {CustomRoles.SpiritGuide , "#f9f3ad"},
                     {CustomRoles.DemonicTracker,"#824880"},
                     {CustomRoles.DemonicCrusher,"#522886"},
                     {CustomRoles.DemonicSupporter , "#351f1f"},
-                    { CustomRoles.DemonicVenter ,"#635963"},
+                    {CustomRoles.DemonicVenter ,"#635963"},
                     {CustomRoles.AsistingAngel,"#8da0b6"},
 
                     {CustomRoles.NotAssigned, "#ffffff"}

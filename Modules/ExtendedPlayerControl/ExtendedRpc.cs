@@ -12,7 +12,6 @@ using TownOfHost.Roles.Core.Interfaces;
 using static TownOfHost.ExtendedPlayerControl;
 
 using static TownOfHost.Translator;
-using Rewired;
 
 namespace TownOfHost
 {
@@ -58,6 +57,8 @@ namespace TownOfHost
                             NameColorManager.Add(player.PlayerId, imp.Key, "ff1919");
                         }
                 }
+                if (role is CustomRoles.SKMadmate)
+                    NameColorManager.RevealSKMadmateToImpostors(player);
             }
             else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
             {
@@ -466,7 +467,7 @@ namespace TownOfHost
                 }
                 return;
             }
-            if (player.IsAlive() || !(player.Data.Role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel))
+            if (player.IsAlive() || !(player.Data.Role.Role is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel or RoleTypes.SpiritGuide))
             {//道連れ、マジシャン等で死んでいないのにIsDeadを変更する場合はモーションを入れる。
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
@@ -487,7 +488,7 @@ namespace TownOfHost
             }
             Patches.GameDataSerializePatch.SerializeMessageCount++;
             RPC.RpcSyncAllNetworkedPlayer();
-            player.RpcSetRole(player.IsGhostRole() ? RoleTypes.GuardianAngel :
+            player.RpcSetRole(player.IsGhostRole() ? (player.Is(CustomRoles.SpiritGuide) ? RoleTypes.SpiritGuide : RoleTypes.GuardianAngel) :
             (player.CanUseSabotageButton() ? RoleTypes.ImpostorGhost : RoleTypes.CrewmateGhost));
             Patches.GameDataSerializePatch.SerializeMessageCount--;
         }

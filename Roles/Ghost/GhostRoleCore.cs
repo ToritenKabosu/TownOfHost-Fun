@@ -22,6 +22,7 @@ class GhostRoleCore
         GhostReseter.Init();
         GhostRumour.Init();
         GuardianAngel.Init();
+        SpiritGuide.Init();
 
         //アドオンもここ置かせて( ᐛ )
         LastImpostor.Init();
@@ -33,7 +34,7 @@ class GhostRoleCore
         Guarding.Init();
         Connecting.Init();
         Opener.Init();
-        //AntiTeleporter.Init();
+        AntiTeleporter.Init();
         Moon.Init();
         Tiebreaker.Init();
         MagicHand.Init();
@@ -50,6 +51,7 @@ class GhostRoleCore
         PlusVote.Init();
         Elector.Init();
         News.Init();
+        Notice.Init();
         InfoPoor.Init();
         Water.Init();
         SlowStarter.Init();
@@ -91,7 +93,7 @@ class GhostRoleCore
         Management.SetupCustomOption();
         Seeing.SetupCustomOption();
         Opener.SetupCustomOption();
-        //AntiTeleporter.SetupCustomOption();
+        AntiTeleporter.SetupCustomOption();
         Lighting.SetupCustomOption();
         Moon.SetupCustomOption();
         //デバフ達
@@ -107,6 +109,7 @@ class GhostRoleCore
         NonReport.SetupCustomOption();
         Sunglasses.SetupCustomOption();
         Transparent.SetupCustomOption();
+        Notice.SetupCustomOption();
         Water.SetupCustomOption();
         Clumsy.SetupCustomOption();
         Slacker.SetupCustomOption();
@@ -127,5 +130,6 @@ class GhostRoleCore
         GhostReseter.SetupCustomOption();
         GhostRumour.SetupCustomOption();
         GuardianAngel.SetupCustomOption();
+        SpiritGuide.SetupCustomOption();
     }
 }

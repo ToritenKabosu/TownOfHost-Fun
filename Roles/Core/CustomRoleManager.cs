@@ -577,6 +577,7 @@ public static class CustomRoleManager
                 case CustomRoles.DemonicCrusher: DemonicCrusher.Add(pc.PlayerId); break;
                 case CustomRoles.DemonicSupporter: DemonicSupporter.Add(pc.PlayerId); break;
                 case CustomRoles.AsistingAngel: AsistingAngel.Add(pc.PlayerId); break;
+                case CustomRoles.SpiritGuide: SpiritGuide.Add(pc.PlayerId); break;
             }
         }
     }
@@ -859,6 +860,8 @@ public enum CustomRoles
     Assassin,
     EvilBlender,
     UnFortuner,
+    Bloodlust,
+    EvilButtoner,
     //DEBUG only Impostor
     //Madmate
     MadGuardian,
@@ -886,6 +889,7 @@ public enum CustomRoles
     Tracker,
     Noisemaker,
     Detective,
+    Judge,
     //Crewmate
     Bait,
     Lighter,
@@ -1017,7 +1021,7 @@ public enum CustomRoles
     Opener,
     Powerful,
     Stack,
-    //AntiTeleporter,
+    AntiTeleporter,
     Seeing,
     Lighting,
     Moon,
@@ -1036,6 +1040,7 @@ public enum CustomRoles
     SlowStarter,
     InfoPoor,
     News,
+    Notice,
     Sunglasses,
 
     //GhostRoles
@@ -1051,6 +1056,7 @@ public enum CustomRoles
     GhostNoiseSender,
     GhostReseter,
     GuardianAngel,
+    SpiritGuide,
     GhostRumour,
     //NeutralGhost
     AsistingAngel,

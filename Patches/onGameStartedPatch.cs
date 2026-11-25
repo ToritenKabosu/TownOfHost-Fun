@@ -95,14 +95,6 @@ namespace TownOfHost
             HudManagerCoShowIntroPatch.Cancel = true;
             RpcSetTasksPatch.taskIds.Clear();
 
-            bool IsPlayerSkinShuffleMode = Options.AllPlayerSkinShuffle.GetBool() && (Event.April || Event.Special);
-            MessageWriter skinShuffleWriter = null;
-            if (IsPlayerSkinShuffleMode && __instance.AmHost && PlayerCatch.AnyModClient())
-            {
-                skinShuffleWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncModSystem, SendOption.Reliable, -1);
-                skinShuffleWriter.Write((int)RPC.ModSystem.SyncSkinShuffle);
-            }
-
             Camouflage.Init();
             var invalidColor = PlayerCatch.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             if (invalidColor.Any())
@@ -139,36 +131,6 @@ namespace TownOfHost
                 Main.clientIdList.Add(pc.GetClientId());
                 pc.RemoveProtection();
 
-                if (IsPlayerSkinShuffleMode)
-                {
-                    if (!__instance.AmHost)
-                    {
-                        Main.AllPlayerNames[pc.PlayerId] = "???";
-                        Main.PlayerColors[pc.PlayerId] = Palette.Black;
-                        continue;
-                    }
-
-                    var tageId = IRandom.Instance.Next(players.Count);
-                    var pl = players.OrderBy(x => Guid.NewGuid()).ToArray()[tageId];
-                    Logger.Info($"{pc?.Data?.PlayerName} => {pl?.Data?.PlayerName}", "Shuffle");
-                    UtilsGameLog.AddGameLogsub($"\n{pc?.Data?.PlayerName}のシャッフル先 : {pl?.Data?.PlayerName}");
-
-                    var colorId = pl.Data.DefaultOutfit.ColorId;
-
-                    Main.AllPlayerNames[pc.PlayerId] = pl?.Data?.PlayerName;
-                    Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                    pc.cosmetics.nameText.text = pl.name;
-
-                    var outfit = pl.Data.DefaultOutfit;
-                    Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
-
-                    skinShuffleWriter?.Write(pc.PlayerId);
-                    skinShuffleWriter?.Write(pl?.PlayerId ?? byte.MaxValue);
-                    skinShuffleWriter?.Write(pl?.Data?.PlayerName ?? "???");
-
-                    players.Remove(pl);
-                }
-                else
                 {
                     var colorId = pc.Data.DefaultOutfit.ColorId;
                     if (AmongUsClient.Instance.AmHost && Options.ColorNameMode.GetBool())// pc.RpcSetName(Palette.GetColorName(colorId));
@@ -187,8 +149,6 @@ namespace TownOfHost
                     Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(Options.ColorNameMode.GetBool() ? Palette.GetColorName(colorId) : outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
                 }
             }
-
-            if (skinShuffleWriter != null) AmongUsClient.Instance.FinishRpcImmediately(skinShuffleWriter);
 
             StandardIntro.CoGameIntroWeight();
 
@@ -256,7 +216,7 @@ namespace TownOfHost
                 }
                 else
                 {
-                    RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Tracker, RoleTypes.Noisemaker, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Detective, RoleTypes.Viper };
+                    RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Tracker, RoleTypes.Noisemaker, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Detective, RoleTypes.Viper, RoleTypes.Judge };
                     foreach (var roleTypes in RoleTypesList)
                     {
                         var roleOpt = Main.NormalOptions.roleOptions;
@@ -355,9 +315,11 @@ namespace TownOfHost
             List<PlayerControl> Noisemakers = new();
             List<PlayerControl> Detectives = new();
             List<PlayerControl> GuardianAngels = new();
+            List<PlayerControl> SpiritGuides = new();
             List<PlayerControl> Shapeshifters = new();
             List<PlayerControl> Phantoms = new();
             List<PlayerControl> Vipers = new();
+            List<PlayerControl> Judges = new();
 
             foreach (var pc in PlayerCatch.AllPlayerControls)
             {
@@ -400,6 +362,10 @@ namespace TownOfHost
                         GuardianAngels.Add(pc);
                         role = CustomRoles.GuardianAngel;
                         break;
+                    case RoleTypes.SpiritGuide:
+                        SpiritGuides.Add(pc);
+                        role = CustomRoles.SpiritGuide;
+                        break;
                     case RoleTypes.Shapeshifter:
                         Shapeshifters.Add(pc);
                         role = CustomRoles.Shapeshifter;
@@ -411,6 +377,10 @@ namespace TownOfHost
                     case RoleTypes.Viper:
                         Vipers.Add(pc);
                         role = CustomRoles.Viper;
+                        break;
+                    case RoleTypes.Judge:
+                        Judges.Add(pc);
+                        role = CustomRoles.Judge;
                         break;
                     default:
                         Logger.seeingame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.GetLogPlayerName()));
@@ -486,7 +456,9 @@ namespace TownOfHost
                         RoleTypes.Tracker => Trackers,
                         RoleTypes.Noisemaker => Noisemakers,
                         RoleTypes.Detective => Detectives,
+                        RoleTypes.Judge => Judges,
                         RoleTypes.GuardianAngel => GuardianAngels,
+                        RoleTypes.SpiritGuide => SpiritGuides,
                         _ => Crewmates,
                     };
                     AssignCustomRolesFromList(role, baseRoleTypes);
@@ -526,7 +498,7 @@ namespace TownOfHost
                     }
                 }
 
-                RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Tracker, RoleTypes.Noisemaker, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Detective, RoleTypes.Viper };
+                RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Tracker, RoleTypes.Noisemaker, RoleTypes.Shapeshifter, RoleTypes.Phantom, RoleTypes.Detective, RoleTypes.Viper, RoleTypes.Judge };
                 foreach (var roleTypes in RoleTypesList)
                 {
                     var roleOpt = Main.NormalOptions.roleOptions;

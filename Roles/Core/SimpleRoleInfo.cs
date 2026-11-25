@@ -238,10 +238,21 @@ public class SimpleRoleInfo
                 configId = 23100;
                 OptionSort = (0, 5);
                 break;
+            case RoleTypes.Judge:
+                roleName = CustomRoles.Judge;
+                customRoleType = CustomRoleTypes.Crewmate;
+                configId = 25100;
+                OptionSort = (0, 6);
+                break;
             case RoleTypes.GuardianAngel:
                 roleName = CustomRoles.GuardianAngel;
                 customRoleType = CustomRoleTypes.Crewmate;
                 configId = -2;
+                break;
+            case RoleTypes.SpiritGuide:
+                roleName = CustomRoles.SpiritGuide;
+                customRoleType = CustomRoleTypes.Crewmate;
+                configId = -10;
                 break;
             case RoleTypes.Impostor:
                 roleName = CustomRoles.Impostor;

@@ -338,6 +338,7 @@ namespace TownOfHost
         [HarmonyPatch(nameof(MainMenuManager.OpenOnlineMenu))]
         [HarmonyPatch(nameof(MainMenuManager.GoBackCreateGame))]
         [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
+        [HarmonyPatch(nameof(MainMenuManager.OpenRedeemCodeMenu))]
         [HarmonyPostfix]
         public static void OpenMenuPostfix(MainMenuManager __instance)
         {
@@ -416,7 +417,8 @@ namespace TownOfHost
             CreateStreameMenu.CloseMenu();
             _ = new LateTask(() =>
             {
-                __instance.ejectMenu?.ejectButton?.gameObject?.SetActive(true);
+                if (__instance?.ejectMenu?.ejectButton?.gameObject is not null)
+                    __instance?.ejectMenu?.ejectButton?.gameObject?.SetActive(true);
             }, 0.5f, "ShowButton", true);
         }
         public static void DestroyButton()
@@ -469,17 +471,26 @@ namespace TownOfHost
             ModNewsHistory.JsonAndAllModNews.Add(news);
         }
     }
+
     [HarmonyPatch(typeof(EjectMainMenu), nameof(EjectMainMenu.EjectCrewmate))]
     class EjectMainMenuEjectCrewmatePatch
     {
         public static int i = 0;
+        public static bool Prefix(EjectMainMenu __instance)
+        {
+            //クールダウン処理を消したver  // pressStateがnullになっていてエラーが発生していたためエラーを発生させないためにっ
+            PlayerParticle playerParticle = __instance.pool.Get<PlayerParticle>();
+            PlayerMaterial.SetColors(IRandom.Instance.Next(0, 18), (Renderer)(object)playerParticle.myRend); // (0~17)
+            __instance.PlacePlayer(playerParticle, initial: false);
+            return false;
+        }
         public static void Postfix(EjectMainMenu __instance)
         {
             try
             {
                 i++;
-                __instance.pressState.SetActive(false);
-                __instance.ejectButton.SetActive(true);
+                __instance.pressState?.SetActive(false);
+                __instance.ejectButton?.SetActive(true);
                 __instance.onCooldown = false;
                 if (10 < i && i < 60)
                 {

@@ -48,10 +48,10 @@ namespace TownOfHost.Modules
             writer.Write(opt.Version);
             writer.StartMessage(0);
             writer.Write((byte)currentGameMode);
-            if (opt.TryCast<NormalGameOptionsV10>(out var normalOpt))
-                NormalGameOptionsV10.Serialize(writer, normalOpt);
-            else if (opt.TryCast<HideNSeekGameOptionsV10>(out var hnsOpt))
-                HideNSeekGameOptionsV10.Serialize(writer, hnsOpt);
+            if (opt.TryCast<NormalGameOptionsV12>(out var normalOpt))
+                NormalGameOptionsV12.Serialize(writer, normalOpt);
+            else if (opt.TryCast<HideNSeekGameOptionsV12>(out var hnsOpt))
+                HideNSeekGameOptionsV12.Serialize(writer, hnsOpt);
             else
             {
                 writer.Recycle();

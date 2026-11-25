@@ -52,6 +52,7 @@ namespace TownOfHost
                 roleCommands.Add(CustomRoles.Tracker, "Trac");
                 roleCommands.Add(CustomRoles.Noisemaker, "Nem");//アプデ対応用 仮
                 roleCommands.Add(CustomRoles.Detective, "Det");
+                roleCommands.Add(CustomRoles.Judge, "ju");
 
                 ConcatCommands(CustomRoleTypes.Crewmate);
 
@@ -77,7 +78,7 @@ namespace TownOfHost
                 roleCommands.Add(CustomRoles.Serial, "Se");
                 roleCommands.Add(CustomRoles.PlusVote, "Pv");
                 roleCommands.Add(CustomRoles.Opener, "Oe");
-                //roleCommands.Add(CustomRoles.AntiTeleporter, "At");
+                roleCommands.Add(CustomRoles.AntiTeleporter, "At");
                 roleCommands.Add(CustomRoles.Revenger, "Re");
                 roleCommands.Add(CustomRoles.Seeing, "Se");
                 roleCommands.Add(CustomRoles.Autopsy, "Au");
@@ -97,6 +98,7 @@ namespace TownOfHost
                 roleCommands.Add(CustomRoles.Elector, "El");
                 roleCommands.Add(CustomRoles.Amnesia, "am");
                 roleCommands.Add(CustomRoles.InfoPoor, "IP");
+                roleCommands.Add(CustomRoles.Notice, "No");
                 roleCommands.Add(CustomRoles.Sunglasses, "Sun");
                 //第三
                 roleCommands.Add(CustomRoles.Lovers, "lo");
@@ -116,6 +118,7 @@ namespace TownOfHost
                 roleCommands.Add(CustomRoles.DemonicTracker, "DTr");
                 roleCommands.Add(CustomRoles.DemonicVenter, "Dve");
                 roleCommands.Add(CustomRoles.AsistingAngel, "AsA");
+                roleCommands.Add(CustomRoles.SpiritGuide, "SpG");
 
                 // HAS
                 roleCommands.Add((CustomRoles)(-6), $"== {GetString("HideAndSeek")} ==");  // 区切り用
@@ -313,6 +316,7 @@ namespace TownOfHost
                 "科学者" => GetString("Scientist"),
                 "トラッカー" => GetString("Tracker"),
                 "ノイズメーカー" => GetString("Noisemaker"),
+                "裁判官" or "ジャッジ" => GetString("Judge"),
                 "巫女" or "みこ" or "ふじょ" => GetString("ShrineMaiden"),
                 "クルー" or "クルーメイト" => GetString("Crewmate"),
                 "狼少年" or "オオカミ少年" or "おおかみ少年" => GetString("WolfBoy"),
@@ -343,7 +347,7 @@ namespace TownOfHost
             input = FixRoleNameInput(input).ToLower();
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
-                if (!includeVanilla && role.IsVanilla() && role != CustomRoles.GuardianAngel) continue;
+                if (!includeVanilla && role.IsVanilla() && role is not CustomRoles.GuardianAngel and not CustomRoles.SpiritGuide) continue;
                 if (input == GuessManager.ChangeNormal2Vanilla(role))
                 {
                     output = role;

@@ -256,7 +256,7 @@ namespace TownOfHost
         {
             if (pc.PlayerId == PlayerControl.LocalPlayer.PlayerId && !Main.showkillbutton) return false;
             if (!pc.IsAlive()) return false;
-            if (pc?.Data?.Role?.Role == RoleTypes.GuardianAngel) return false;
+            if (pc?.Data?.Role?.Role is RoleTypes.GuardianAngel or RoleTypes.SpiritGuide) return false;
 
             if (pc.Is(CustomRoles.Amnesia) && !pc.Is(CustomRoleTypes.Impostor)) return false;
 
@@ -335,7 +335,12 @@ namespace TownOfHost
         {
             if (SuddenDeathMode.NowSuddenDeathMode)
             {
+                var roleclass = player.GetRoleClass();
                 var killcool = SuddenDeathMode.SuddenKillcooltime.GetFloat();
+                if (roleclass is IKiller killer && killer.CalculateKillCooldown() != Options.DefaultKillCooldown)
+                {
+                    killcool = killer.CalculateKillCooldown();
+                }
                 if (player.GetPlayerState().Killcount <= 0 && 0 < killcool)
                 {
                     Main.AllPlayerKillCooldown[player.PlayerId] = killcool;
@@ -399,7 +404,7 @@ namespace TownOfHost
         }
         public static PlayerControl TryGetKilltarget(this PlayerControl pc, bool IsOneclick = false)//SNR参考!(((
         {
-            float killdis = NormalGameOptionsV10.KillDistances[Mathf.Clamp(GameManager.Instance.LogicOptions.currentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)];
+            float killdis = NormalGameOptionsV12.KillDistances[Mathf.Clamp(GameManager.Instance.LogicOptions.currentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)];
 
             if (pc.Data.IsDead || pc.inVent) return null;
 

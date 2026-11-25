@@ -10,6 +10,7 @@ using TownOfHost.Modules;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Impostor;
 using static TownOfHost.Translator;
+using TownOfHost.Roles.Core.Interfaces;
 
 namespace TownOfHost
 {
@@ -166,7 +167,7 @@ namespace TownOfHost
                 }
             }
             logger.Info("------------基本設定------------");
-            var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(10);
+            var tmp = GameOptionsManager.Instance.CurrentGameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10).Split("\r\n").Skip(1).SkipLast(11);
             foreach (var t in tmp) logger.Info(t);
             logger.Info("------------詳細設定------------");
             foreach (var o in OptionItem.AllOptions.Where(o => o is not ObjectOptionitem))
@@ -368,9 +369,13 @@ namespace TownOfHost
                         RoleManager.Instance.SetRole(pc, RoleTypes.Impostor);
                         yourTeam.Add(pc);
                     }
-                    if (pc.Is(CustomRoles.OneWolf))
+                    else if (pc.Is(CustomRoles.OneWolf))
                     {
                         yourTeam.Remove(pc);
+                    }
+                    else if (pc.Is(CustomRoleTypes.Impostor) && !yourTeam.Contains(pc))
+                    {
+                        yourTeam.Add(pc);
                     }
                 }
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.OneWolf))
@@ -413,7 +418,18 @@ namespace TownOfHost
                         {
                             _ = new LateTask(() =>
                             {
-                                PlayerCatch.AllPlayerControls.Do(pc => pc.SetKillCooldown(SuddenDeathMode.SuddenKillcooltime.GetFloat() - 0.7f, delay: true));
+                                var killcool = SuddenDeathMode.SuddenKillcooltime.GetFloat();
+                                foreach (var pc in PlayerCatch.AllPlayerControls)
+                                {
+                                    if (pc != null)
+                                    {
+                                        if (pc.GetRoleClass() is IKiller killer && killer.CalculateKillCooldown() != Options.DefaultKillCooldown)
+                                        {
+                                            killcool = killer.CalculateKillCooldown();
+                                        }
+                                        pc.SetKillCooldown(killcool, delay: true);
+                                    }
+                                }
                             }, 0.7f, "FixKillCooldownTask", null);
                         }
                         else if (Options.FixFirstKillCooldown.GetBool())
@@ -558,18 +574,7 @@ namespace TownOfHost
                     CustomButtonHud.BottonHud(true);
                 }, 0.3f, "setnames", true);
 
-                bool IsPlayerSkinShuffleMode = Options.AllPlayerSkinShuffle.GetBool() && (Event.April || Event.Special);
-                if (IsPlayerSkinShuffleMode)
-                {
-                    PlayerCatch.AllPlayerControls.Do(pc =>
-                    {
-                        if (!Camouflage.PlayerSkins.TryGetValue(pc.PlayerId, out var outfit)) return;
-
-                        if (Options.ColorNameMode.GetBool()) pc.RpcSetName(Palette.GetColorName(outfit.ColorId));
-                        else pc.RpcSetName(outfit.PlayerName);
-                    });
-                }
-                else if (Options.ColorNameMode.GetBool())
+                if (Options.ColorNameMode.GetBool())
                 {
                     PlayerCatch.AllPlayerControls.Do(pc =>
                     {
@@ -580,7 +585,7 @@ namespace TownOfHost
                 _ = new LateTask(() =>
                 {
                     CustomRoleManager.AllActiveRoles.Values.Do(role => role.ChangeColor());
-                    UtilsNotifyRoles.NotifyRoles(NoCache: IsPlayerSkinShuffleMode || Options.ColorNameMode.GetBool(), ForceLoop: true);
+                    UtilsNotifyRoles.NotifyRoles(NoCache: Options.ColorNameMode.GetBool(), ForceLoop: true);
 
                     ExtendedRpc.AllPlayerOnlySeeMePet();
                     SuddenDeathMode.NotTeamKill();

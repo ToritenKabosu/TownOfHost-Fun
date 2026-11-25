@@ -4,6 +4,7 @@ using System.Linq;
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using TownOfHost.Modules;
 using TownOfHost.Modules.ChatManager;
@@ -61,7 +62,7 @@ namespace TownOfHost
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
-                NormalGameOptionsV10 gameOptions = Main.NormalOptions.TryCast<NormalGameOptionsV10>();
+                NormalGameOptionsV12 gameOptions = Main.NormalOptions.TryCast<NormalGameOptionsV12>();
                 if (Main.NormalOptions.NumImpostors == 0 && GameStates.IsOnlineGame)
                     gameOptions.SetInt(Int32OptionNames.NumImpostors, 1);
 
@@ -73,7 +74,9 @@ namespace TownOfHost
                 gameOptions.RoleOptions.SetRoleRate(RoleTypes.Phantom, 0, 0);
                 gameOptions.RoleOptions.SetRoleRate(RoleTypes.Detective, 0, 0);
                 gameOptions.RoleOptions.SetRoleRate(RoleTypes.Viper, 0, 0);
-                Main.NormalOptions.roleOptions.TryGetRoleOptions(RoleTypes.GuardianAngel, out GuardianAngelRoleOptionsV10 roleData);
+                gameOptions.RoleOptions.SetRoleRate(RoleTypes.Judge, 0, 0);//アプデ対応　　　　　　　　　　　　　　　↓これ忘れやすい
+                Main.NormalOptions.roleOptions.TryGetRoleOptions(RoleTypes.GuardianAngel, out GuardianAngelRoleOptionsV12 roleData);
+                gameOptions.RoleOptions.SetRoleRate(RoleTypes.SpiritGuide, 0, 0);
                 gameOptions.SetBool(BoolOptionNames.ConfirmImpostor, false);
                 gameOptions.SetInt(Int32OptionNames.TaskBarMode, 2);
                 if (Main.NormalOptions.MaxPlayers > 15)
@@ -114,7 +117,22 @@ namespace TownOfHost
             {
                 CustomSpawnManager.Save();
                 CustomSpawnEditor.ActiveEditMode = false;
-            }
+            }/*
+            if (Utils.IsRestriction() && reason is DisconnectReasons.Hacking && !GameStates.InGame)
+            {
+                DataManager.Player.Customization.Visor = VisorData.EmptyId;
+                DataManager.Player.Customization.Pet = PetData.EmptyId;
+                DataManager.Player.Customization.Skin = SkinData.EmptyId;
+                DataManager.Player.Customization.NamePlate = NamePlateData.EmptyId;
+                DataManager.Player.Customization.colorID = 0;
+                DataManager.Player.Customization.Hat = HatData.EmptyId;
+                DataManager.Player.Customization.Name = "Dummy";
+            Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<byte> option = new(AmongUs.Data.DataManager.Settings.Multiplayer.RawNormalHostOptions.Count);
+            AmongUs.Data.DataManager.Settings.Multiplayer.RawNormalHostOptions = option;
+            Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<byte> option2 = new(AmongUs.Data.DataManager.Settings.Multiplayer.RawHideNSeekSearchOptions.Count);
+            AmongUs.Data.DataManager.Settings.Multiplayer.RawHideNSeekSearchOptions = option2;
+                return;
+            }*/
 
             if (AmongUsClient.Instance.AmHost && GameStates.InGame && reason is not DisconnectReasons.Destroy)
             {

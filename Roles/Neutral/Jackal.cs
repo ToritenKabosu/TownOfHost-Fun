@@ -20,7 +20,7 @@ namespace TownOfHost.Roles.Neutral
                 SetupOptionItem,
                 "jac",
                 "#00b4eb",
-                (1, 0),
+                (0, 0),
                 true,
                 countType: CountTypes.Jackal,
                 assignInfo: new RoleAssignInfo(CustomRoles.Jackal, CustomRoleTypes.Neutral)
@@ -85,6 +85,7 @@ namespace TownOfHost.Roles.Neutral
             OptionCooldown = FloatOptionItem.Create(RoleInfo, 18, GeneralOption.Cooldown, new(0f, 180f, 0.5f), 30f, false, OptionCanMakeSidekick)
                 .SetValueFormat(OptionFormat.Seconds);
             OptionSidekickPromotion = BooleanOptionItem.Create(RoleInfo, 19, OptionName.JackalSidekickPromotion, false, false, OptionCanMakeSidekick);
+            ObjectOptionitem.Create(RoleInfo, 8, "AddonOption", true, null).SetOptionName(() => "Sidekick Setting");
             RoleAddAddons.Create(RoleInfo, 20, NeutralKiller: true);
         }
         public float CalculateKillCooldown() => KillCooldown;

@@ -30,7 +30,7 @@ namespace TownOfHost.Modules
 
         public IGameOptions cachedGameOptions = null;
         public override IGameOptions BasedGameOptions =>
-            Main.RealOptionsData.Restore(cachedGameOptions ?? (cachedGameOptions = new NormalGameOptionsV10(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()));
+            Main.RealOptionsData.Restore(cachedGameOptions ?? (cachedGameOptions = new NormalGameOptionsV12(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()));
         public override bool IsDirty { get; protected set; }
 
         public PlayerControl player;
@@ -90,9 +90,11 @@ namespace TownOfHost.Modules
                 var detective = IsAlive ? opt.GetFloat(FloatOptionNames.DetectiveSuspectLimit) : 0;
                 var guardancool = opt.GetFloat(FloatOptionNames.GuardianAngelCooldown);
                 var vip = opt.GetFloat(FloatOptionNames.ViperDissolveTime);
+                var jud = opt.GetFloat(FloatOptionNames.JudgeTaskRequirementPercentage);
+                var spgcd = opt.GetFloat(FloatOptionNames.SpiritGuideCooldownSeconds);
 
                 string NowOption = $"{killCooldown},{killDistance},{impostorLight},{crewLight},{playerSpeed},{numEmergency},{emergencyCooldown},{discussionTime},{votingTime},{anonymousVotes},{numCommonTasks},{numLongTasks},{numShortTasks},{visualTasks},{taskBarMode},{confirmImpostor}";
-                NowOption += $"{engcooldown},{engmaxtime},{scicooldown},{scibattery},{trackercool},{trackerdelay},{tarckduration},{noisealert},{noiseimp},{shapecool},{ShapeshifterDuration},{shapeskin},{phantom},{detective},{vip},{guardancool}";
+                NowOption += $"{engcooldown},{engmaxtime},{scicooldown},{scibattery},{trackercool},{trackerdelay},{tarckduration},{noisealert},{noiseimp},{shapecool},{ShapeshifterDuration},{shapeskin},{phantom},{detective},{vip},{guardancool},{jud},{spgcd}";
                 if (OldOptionstext == NowOption)//再度送信するならキャンセル
                 {
                     return;
@@ -144,6 +146,7 @@ namespace TownOfHost.Modules
             AURoleOptions.ShapeshifterLeaveSkin = false;
             AURoleOptions.NoisemakerImpostorAlert = true;
             AURoleOptions.NoisemakerAlertDuration = Noisemaker.NoisemakerAlertDuration.GetFloat();
+            AURoleOptions.JudgeTaskRequirementPercentage = Judge.GetTaskRequirementPercentage(player);
             AURoleOptions.ViperDissolveTime = Viper.ViperDissolveTime;
 
             if (player == null)
@@ -356,6 +359,7 @@ namespace TownOfHost.Modules
                         case CustomRoles.DemonicCrusher: AURoleOptions.GuardianAngelCooldown = CoolDown(DemonicCrusher.CoolDown.GetFloat()); break;
                         case CustomRoles.DemonicVenter: AURoleOptions.GuardianAngelCooldown = CoolDown(DemonicVenter.CoolDown.GetFloat()); break;
                         case CustomRoles.AsistingAngel: AURoleOptions.GuardianAngelCooldown = CoolDown(AsistingAngel.GetNowCoolDown()); break;
+                        case CustomRoles.SpiritGuide: AURoleOptions.SpiritGuideCooldownSeconds = CoolDown(SpiritGuide.CoolDown.GetFloat()); break;
                     }
                 }
             }

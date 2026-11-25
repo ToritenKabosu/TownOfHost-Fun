@@ -53,6 +53,7 @@ namespace TownOfHost
                         || (Main.VisibleTasksCount && !seer.Is(CustomRoles.AsistingAngel) && !seer.IsAlive() && (!seer.IsGhostRole() || Options.GhostRoleCanSeeOtherRoles.GetBool()) && (Options.GhostCanSeeOtherRoles.GetBool() || !Options.GhostOptions.GetBool()))
                         || (Options.InsiderMode.GetBool() && seerrole.IsImpostor())
                         || (Options.CanSeeImpostorRole.GetBool() && seerrole.IsImpostor() && seen.GetCustomRole().IsImpostor())
+                        || (Options.ImpostorCanSeeSKMadmate.GetBool() && seerrole.IsImpostor() && seen.Is(CustomRoles.SKMadmate))
                         || seen.Is(CustomRoles.MadonnaLovers) && seer.Is(CustomRoles.MadonnaLovers) && Madonna.IsKnowRole
                         ;
 
@@ -165,7 +166,7 @@ namespace TownOfHost
                         case CustomRoles.Management: sb.Append(Management.SubRoleMark); break;
                         case CustomRoles.Seeing: sb.Append(Seeing.SubRoleMark); break;
                         case CustomRoles.Opener: sb.Append(Opener.SubRoleMark); break;
-                        //case CustomRoles.AntiTeleporter: sb.Append(AntiTeleporter.SubRoleMark); break;
+                        case CustomRoles.AntiTeleporter: sb.Append(AntiTeleporter.SubRoleMark); break;
                         case CustomRoles.Lighting: sb.Append(Lighting.SubRoleMark); break;
                         case CustomRoles.Moon: sb.Append(Moon.SubRoleMark); break;
                         case CustomRoles.Powerful: sb.Append(Powerful.SubRoleMark); break;
@@ -181,6 +182,7 @@ namespace TownOfHost
                         case CustomRoles.Elector: sb.Append(Elector.SubRoleMark); break;
                         case CustomRoles.InfoPoor: sb.Append(InfoPoor.SubRoleMark); break;
                         case CustomRoles.News: sb.Append(News.SubRoleMark); break;
+                        case CustomRoles.Notice: sb.Append(Notice.SubRoleMark); break;
                         case CustomRoles.Sunglasses: sb.Append(Sunglasses.SubRoleMark); break;
                     }
                 }

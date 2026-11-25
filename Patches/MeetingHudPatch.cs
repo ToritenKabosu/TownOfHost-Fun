@@ -20,6 +20,8 @@ using TownOfHost.Roles.AddOns.Common;
 using static TownOfHost.Translator;
 using TownOfHost.Modules.ChatManager;
 using System;
+using InnerNet;
+using Hazel;
 
 namespace TownOfHost;
 
@@ -39,7 +41,7 @@ public static class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
     public static class CastVotePatch
     {
-        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId /* 投票した人 */ , [HarmonyArgument(1)] byte suspectPlayerId /* 投票された人 */ )
+        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId srcPlayerId /* 投票した人 */ , [HarmonyArgument(1)] PlayerId suspectPlayerId /* 投票された人 */ )
         {
             if (AmongUsClient.Instance.AmHost is false) return true;
             if (Options.firstturnmeeting && Options.FirstTurnMeetingCantability.GetBool() && MeetingStates.FirstMeeting)
@@ -63,31 +65,62 @@ public static class MeetingHudPatch
 
                 if (roleClass?.CheckVoteAsVoter(suspectPlayerId, voter) == false || (!votefor.IsAlive() && suspectPlayerId != 253 && suspectPlayerId != 254 && !Assassin.NowUse))
                 {
-                    __instance.RpcClearVote(voter.GetClientId());
+                    __instance.RpcClearVote(voter.PlayerId);
                     Logger.Info($"{voter.GetNameWithRole().RemoveHtmlTags()} は投票しない！ => {suspectPlayerId}", nameof(CastVotePatch));
                     return false;
                 }
-                else
-                    if (voter.Is(CustomRoles.Elector) && suspectPlayerId == 253 || (RoleAddAddons.GetRoleAddon(voter.GetCustomRole(), out var da, voter, subrole: CustomRoles.Elector) && da.GiveElector.GetBool() && suspectPlayerId == 253))
-                    {
-                        Utils.SendMessage(GetString("ElectorCancelMessage"), voter.PlayerId);
-                        __instance.RpcClearVote(voter.GetClientId());
-                        Logger.Info($"{voter.GetNameWithRole().RemoveHtmlTags()} イレクター発動 => {suspectPlayerId}", nameof(CastVotePatch));
-                        return false;
-                    }
+                else if (voter.Is(CustomRoles.Elector) && suspectPlayerId == 253 || (RoleAddAddons.GetRoleAddon(voter.GetCustomRole(), out var da, voter, subrole: CustomRoles.Elector) && da.GiveElector.GetBool() && suspectPlayerId == 253))
+                {
+                    Utils.SendMessage(GetString("ElectorCancelMessage"), voter.PlayerId);
+                    __instance.RpcClearVote(voter.PlayerId);
+                    Logger.Info($"{voter.GetNameWithRole().RemoveHtmlTags()} イレクター発動 => {suspectPlayerId}", nameof(CastVotePatch));
+                    return false;
+                }
             }
             if (voter.GetRoleClass() is ISelfVoter selfVoter && Amnesia.CheckAbility(voter))
             {
                 if (selfVoter.CanUseVoted())
                 {
                     MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId, isoverride: false);
-                    __instance.RpcClearVote(voter.GetClientId());
+                    __instance.RpcClearVote(voter.PlayerId);
                     Utils.SendMessage(GetString("SelfVoterCancelMessage"), voter.PlayerId);
                     return true;
                 }
             }
             MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
             return true;
+        }
+    }
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.SetJudgeOverrule))]
+    public static class SetJudgeOverrulePatch
+    {
+        public static ushort OverruleNonce;
+        public static byte CallerId;
+        public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] PlayerId judgePlayerId /* 投票した人 */ , [HarmonyArgument(1)] PlayerId targetPlayerId, [HarmonyArgument(2)] ushort overruleNonce)
+        {
+            if (!AmongUsClient.Instance.AmHost) return true;
+            Logger.Info($"{judgePlayerId} => {targetPlayerId} , {overruleNonce}", "SetJudge");
+            var voter = PlayerCatch.GetPlayerById(judgePlayerId);
+            var votefor = PlayerCatch.GetPlayerById(targetPlayerId);
+            var roleclass = voter.GetRoleClass();
+            var ExilePlayerid = byte.MaxValue;
+
+            if (roleclass?.CallJudgeVote(voter, votefor, ref ExilePlayerid) is true)
+            {
+                MeetingVoteManager.Instance?.SetVote(judgePlayerId, targetPlayerId, Isjudgevote: true,
+                    ovex: CallerId == byte.MaxValue ? ExilePlayerid : byte.MaxValue);
+                //MeetingVoteManager.Instance?.EndMeeting();
+                if (CallerId == byte.MaxValue)
+                {
+                    OverruleNonce = overruleNonce;
+                }
+                CallerId = voter.PlayerId;
+
+                return true;
+            }
+
+            __instance.RpcClearVote(voter.PlayerId);
+            return false;
         }
     }
     public static string Oniku = "";
@@ -161,7 +194,7 @@ public static class MeetingHudPatch
 
             foreach (var pva in __instance.playerStates)
             {
-                var pc = PlayerCatch.GetPlayerById(pva.TargetPlayerId);
+                var pc = PlayerCatch.GetPlayerById(pva.PlayerId);
                 if (pc == null) continue;
 
                 var roleTextMeeting = UnityEngine.Object.Instantiate(pva.NameText);
@@ -355,13 +388,13 @@ public static class MeetingHudPatch
                     {
                         foreach (var pva in __instance.playerStates)
                         {
-                            var pc = PlayerCatch.GetPlayerById(pva.TargetPlayerId);
+                            var pc = PlayerCatch.GetPlayerById(pva.PlayerId);
                             if (pc == null) continue;
 
                             if (MeetingStates.FirstMeeting) UtilsShowOption.SendRoleInfo(pc);
-                            else if (Utils.RoleSendList.Contains(pva.TargetPlayerId)) UtilsShowOption.SendRoleInfo(pc);
+                            else if (Utils.RoleSendList.Contains(pva.PlayerId)) UtilsShowOption.SendRoleInfo(pc);
 
-                            if (MeetingStates.FirstMeeting || Utils.RoleSendList.Contains(pva.TargetPlayerId))
+                            if (MeetingStates.FirstMeeting || Utils.RoleSendList.Contains(pva.PlayerId))
                             {
                                 var addrole = pc.GetRoleClass()?.HaveAddRole() ?? CustomRoles.NotAssigned;
                                 if (addrole is not CustomRoles.NotAssigned)
@@ -390,10 +423,10 @@ public static class MeetingHudPatch
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
 
-                var target = PlayerCatch.GetPlayerById(pva.TargetPlayerId);
+                var target = PlayerCatch.GetPlayerById(pva.PlayerId);
                 if (target == null)
                 {
-                    if (Camouflage.PlayerSkins.TryGetValue(pva.TargetPlayerId, out var cosm))
+                    if (Camouflage.PlayerSkins.TryGetValue(pva.PlayerId, out var cosm))
                     {
                         pva.NameText.text = cosm.PlayerName;
                     }
@@ -407,7 +440,7 @@ public static class MeetingHudPatch
                 //自分自身の名前の色を変更
                 //NameColorManager準拠の処理
                 var name = pva.NameText.text;
-                if (Camouflage.PlayerSkins.TryGetValue(pva.TargetPlayerId, out var cos))
+                if (Camouflage.PlayerSkins.TryGetValue(pva.PlayerId, out var cos))
                 {
                     name = cos.PlayerName;
                 }
@@ -517,13 +550,13 @@ public static class MeetingHudPatch
             {
                 __instance.playerStates.DoIf(x => x.HighlightedFX.enabled, x =>
                 {
-                    var state = PlayerState.GetByPlayerId(x.TargetPlayerId);
+                    var state = PlayerState.GetByPlayerId(x.PlayerId);
                     state.DeathReason = CustomDeathReason.Execution;
                     state.SetDead();
-                    var player = PlayerCatch.GetPlayerById(x.TargetPlayerId);
+                    var player = PlayerCatch.GetPlayerById(x.PlayerId);
                     if (player is null)
                     {
-                        var data = GameData.Instance.AllPlayers.ToArray().Where(a => a.PlayerId == x.TargetPlayerId).FirstOrDefault();
+                        var data = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(a => a.PlayerId == x.PlayerId);
                         if (data is not null) data.Disconnected = true;
 
                         __instance.CheckForEndVoting();
@@ -560,6 +593,33 @@ public static class MeetingHudPatch
                 {
                     hud.AmDead = false;
                 });
+            }
+        }
+    }
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.VotingComplete))]
+    class VotingCompletePatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            var result = AntiBlackout.voteresult;
+            if (result.HasValue is false) return;
+
+            if (result.Value.OverrideExiled != byte.MaxValue)
+            {
+                bool anotherJudgeBeatYouToIt = false;
+                JudgeRole judgeRole = PlayerControl.LocalPlayer.Data.Role as JudgeRole;
+                if (judgeRole && judgeRole.HasAlreadyOverruledThisMeeting)
+                {
+                    if (judgeRole.OverruleNonce == result.Value.OverruleNonce)
+                    {
+                        judgeRole.ConsumeOverruleVotesUsage();
+                    }
+                    else
+                    {
+                        anotherJudgeBeatYouToIt = true;
+                    }
+                }
+                __instance.ShowJudgeOverrule(anotherJudgeBeatYouToIt);
             }
         }
     }

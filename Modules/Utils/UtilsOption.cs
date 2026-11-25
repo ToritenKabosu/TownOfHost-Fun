@@ -694,9 +694,11 @@ namespace TownOfHost
             if (player.Is(CustomRoles.Absorb)) SendMessage(GetAddonsHelp(CustomRoles.Absorb), player.PlayerId, AddRoleInfoTitle);
             if (player.Is(CustomRoles.Management)) SendMessage(GetAddonsHelp(CustomRoles.Management), player.PlayerId, AddRoleInfoTitle);
             if (player.Is(CustomRoles.Opener)) SendMessage(GetAddonsHelp(CustomRoles.Opener), player.PlayerId, AddRoleInfoTitle);
+            if (player.Is(CustomRoles.AntiTeleporter)) SendMessage(GetAddonsHelp(CustomRoles.AntiTeleporter), player.PlayerId, AddRoleInfoTitle);
             if (player.Is(CustomRoles.Seeing)) SendMessage(GetAddonsHelp(CustomRoles.Seeing), player.PlayerId, AddRoleInfoTitle);
             if (player.Is(CustomRoles.Lighting)) SendMessage(GetAddonsHelp(CustomRoles.Lighting), player.PlayerId, AddRoleInfoTitle);
             if (player.Is(CustomRoles.Moon)) SendMessage(GetAddonsHelp(CustomRoles.Moon), player.PlayerId, AddRoleInfoTitle);
+            if (player.Is(CustomRoles.Notice)) SendMessage(GetAddonsHelp(CustomRoles.Notice), player.PlayerId, AddRoleInfoTitle);
 
             //デバフ
             if (player.Is(CustomRoles.News)) SendMessage(GetAddonsHelp(CustomRoles.News), player.PlayerId, AddRoleInfoTitle);
@@ -756,10 +758,11 @@ namespace TownOfHost
                 CustomRoles.Absorb => AddonInfo(role, "Г"),
                 CustomRoles.Management => AddonInfo(role, "θ", From.TownOfHost_Y),
                 CustomRoles.Opener => AddonInfo(role, "п"),
-                //CustomRoles.AntiTeleporter => AddonInfo(role, "t", From.RevolutionaryHostRoles),
+                CustomRoles.AntiTeleporter => AddonInfo(role, "＠", From.RevolutionaryHostRoles),
                 CustomRoles.Seeing => AddonInfo(role, "☯", From.TownOfHost_Y),
                 CustomRoles.Lighting => AddonInfo(role, "＊", From.TownOfHost_Y),
                 CustomRoles.Moon => AddonInfo(role, "э"),
+                CustomRoles.Notice => AddonInfo(role, "Ｎo"),
                 //デバフ
                 CustomRoles.Amnesia => AddonInfo(role),
                 CustomRoles.SlowStarter => AddonInfo(role, "Ｓs"),
@@ -795,6 +798,7 @@ namespace TownOfHost
                 CustomRoles.DemonicSupporter => AddonInfo(role),
                 CustomRoles.DemonicVenter => AddonInfo(role),
                 CustomRoles.AsistingAngel => AddonInfo(role),
+                CustomRoles.SpiritGuide => AddonInfo(role),
 
                 _ => $"{role}-{role.GetRoleInfo()?.ConfigId ?? -100}...?(´・ω・｀)"
             });
@@ -919,7 +923,6 @@ namespace TownOfHost
                 case From.TownOfHost: Fromtext += $"<#00bfff>{from}</color>"; break;
                 case From.TownOfHost_Y: Fromtext += $"<#dddd00>TownOfHost_Y</color>"; break;
                 case From.TownOfHost_for_E: Fromtext += $"<#18e744>TownOfHost for E</color>"; break;
-                case From.Speyrp: Fromtext = $"<#7fffbf>From:Yoran★</color>"; break;
                 case From.TownOfHost_E: Fromtext += $"<#ffc0cb>TownOfHost E</color>"; break;
                 case From.RevolutionaryHostRoles: Fromtext += $"<#3cb371>RevolutionaryHostRoles</color>"; break;
                 case From.Love_Couple_Mod: Fromtext += "<#ff6be4>Love Couple Mod</color>"; break;

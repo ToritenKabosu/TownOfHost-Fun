@@ -2,6 +2,7 @@ using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
 using TownOfHost.Modules;
+using TownOfHost.Roles.AddOns.Common;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Impostor;
 using TownOfHost.Roles.Neutral;
@@ -135,6 +136,7 @@ namespace TownOfHost
             FallFromLadder.Reset();
             PlayerCatch.CountAlivePlayers(true);
             Utils.AfterMeetingTasks();
+            AntiTeleporter.AfterMeetingTasks();
 
             if (AmongUsClient.Instance.AmHost && Main.NormalOptions.MapId != 4)
             {
@@ -273,7 +275,7 @@ namespace TownOfHost
         public static bool SecondBegin = false;
         public static bool Prefix(ExileController __instance, ExileController.InitProperties init)
         {
-            if (PlayerCatch.AllPlayersCount < 4)
+            if (PlayerCatch.AllPlayersCount < AntiBlackout.MustPlayerCount)
             {
                 __instance.completeString = Translator.GetString(StringNames.NoExileTie);
                 return true;
@@ -287,10 +289,12 @@ namespace TownOfHost
                 {
                     if (SecondBegin)
                     {
+                        init.wasOverruled = result.Value.OverrideExiled != byte.MaxValue;
                         __instance.completeString = string.Format(Translator.GetString(StringNames.ExileTextNonConfirm), result.Value.Exiled.GetLogPlayerName());
                         SecondBegin = false;
                         return true;
                     }
+                    modinit.wasOverruled = result.Value.OverrideExiled != byte.MaxValue;
                     modinit.networkedPlayer = result.Value.Exiled;
                     modinit.outfit = Camouflage.PlayerSkins.TryGetValue(result.Value.Exiled.PlayerId, out var skin) ? skin : result.Value.Exiled.DefaultOutfit;
                     modinit.voteTie = false;
@@ -299,6 +303,8 @@ namespace TownOfHost
                     return false;
                 }
             }
+            if (result.HasValue && result.Value.OverrideExiled == byte.MaxValue)
+                init.wasOverruled = false;
             return true;
         }
         public static void Postfix(ExileController __instance)
@@ -309,7 +315,7 @@ namespace TownOfHost
             {
                 if (result.Value.Exiled is null)
                 {
-                    if (result.Value.IsTie)
+                    if (result.Value.IsTie && result.Value.OverrideExiled != byte.MaxValue)
                     {
                         __instance.completeString = Translator.GetString(StringNames.NoExileTie);
                     }
@@ -321,6 +327,10 @@ namespace TownOfHost
                 else if (result.Value.Exiled.Object?.GetRoleClass() is Assassin && Assassin.NowUse)
                 {
                     __instance.completeString = MeetingVoteManager.Voteresult + "<size=0>";
+                }
+                else if (result.Value.OverrideExiled == byte.MaxValue)
+                {
+                    __instance.completeString = string.Format(Translator.GetString(StringNames.ExileTextNonConfirm), result.Value.Exiled.GetLogPlayerName());
                 }
             }
             SecondBegin = false;
