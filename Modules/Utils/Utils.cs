@@ -921,13 +921,6 @@ namespace TownOfHost
         public const string AdditionalWinnerMark = "<#dddd00>★</color>";
         public const string AdditionalAliveWinnerMark = "<#349121>★</color>";
 
-        public static void SyncAllSettings()
-        {
-            // 設定を同期するための処理をここに記述
-            // 例: 各プレイヤーの設定をサーバーと同期する
-            Logger.Info("Syncing all settings...", "Utils");
-            // 実際の同期処理をここに実装
-        }
         /// <summary>
         /// バニラサーバーの処理を行うか
         /// </summary>
